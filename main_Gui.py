@@ -9,18 +9,15 @@ import os
 from lexer import Word_List
 
 head = """
-:::Welcome to PCC master——Ｃ语言编译器
-:::使用帮助：pcc -h
+>>> Welcome to C2S-C语言编译器
+>>> 使用帮助：pcc -h
+>>>
 """
 
 phelp = """+-------------------------------------------------+
-|\tpcc -s [filename]\t生成汇编源码(AT&T)        
-|\tpcc -m [filename]\t查看生成的四元式        
-|\tpcc -t [filename]\t查看语法树生成过程   
-|\tpcc -l [filename]\t查看词法分析        
-|\tpcc -p \t查看预测分析表                   
-|\tpcc -g \t查看语法推导                     
-|\tquit\t退出                            
+按钮操作即可
+- Mcode为四元式
+- Grammar为语法表                           
 +-------------------------------------------------+
 """
 
@@ -32,7 +29,7 @@ class PCCCompilerGUI(QMainWindow):
         self.selected_file = ""
 
     def initUI(self):
-        self.setWindowTitle("PCC Compiler")
+        self.setWindowTitle("C2S Compiler")
 
         self.command_input = QLineEdit(self)
         self.command_input.setPlaceholderText("Enter command here")
@@ -105,7 +102,7 @@ class PCCCompilerGUI(QMainWindow):
             self.text_edit.append(f"Selected file: {self.selected_file}")
 
     def execute_command(self, command):
-        self.text_edit.append(f":::PCC >>> {command}")
+        self.text_edit.append(f">>> PCC >>> {command}")
         os.system(command)
 
     def generate_asm(self):
@@ -190,5 +187,7 @@ class PCCCompilerGUI(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     gui = PCCCompilerGUI()
+    gui.resize(900,700)
     gui.show()
+    gui.text_edit.append(head)
     sys.exit(app.exec_())
