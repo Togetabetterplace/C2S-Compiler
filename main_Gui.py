@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QFileDialog, QLineEdit, QLabel, QMessageBox
 from to_asm import to_asm
-from to_gcc_asm import to_asmi
+from to_exe import to_exe
 from generate import creat_mcode
 from get_Ptable import grammars, show_tables
 from LR import analysis
@@ -15,7 +15,6 @@ head = """
 
 phelp = """+-------------------------------------------------+
 |\tpcc -s [filename]\t生成汇编源码(AT&T)        
-|\tpcc -a [filename]\t生成汇编源码(gcc)     
 |\tpcc -m [filename]\t查看生成的四元式        
 |\tpcc -t [filename]\t查看语法树生成过程   
 |\tpcc -l [filename]\t查看词法分析        
@@ -50,8 +49,8 @@ class PCCCompilerGUI(QMainWindow):
         self.button_generate_asm = QPushButton("Generate ASM (AT&T)", self)
         self.button_generate_asm.clicked.connect(self.generate_asm)
 
-        self.button_generate_gcc_asm = QPushButton("Generate ASM (GCC)", self)
-        self.button_generate_gcc_asm.clicked.connect(self.generate_gcc_asm)
+        self.button_generate_exe = QPushButton("Generate EXE file", self)
+        self.button_generate_exe.clicked.connect(self.generate_exe)
 
         self.button_show_mcode = QPushButton("Show MCode", self)
         self.button_show_mcode.clicked.connect(self.show_mcode)
@@ -81,7 +80,7 @@ class PCCCompilerGUI(QMainWindow):
         right_layout.addWidget(self.button_select_file)
         right_layout.addWidget(self.button_help)
         right_layout.addWidget(self.button_generate_asm)
-        right_layout.addWidget(self.button_generate_gcc_asm)
+        right_layout.addWidget(self.button_generate_exe)
         right_layout.addWidget(self.button_show_mcode)
         right_layout.addWidget(self.button_show_syntax_tree)
         right_layout.addWidget(self.button_show_lexical_analysis)
@@ -121,18 +120,19 @@ class PCCCompilerGUI(QMainWindow):
         else:
             self.text_edit.append("\tNo file selected")
 
-    def generate_gcc_asm(self):
-        if self.selected_file:
+
+    def generate_exe(self):
+        if self.select_file:
             try:
-                to_asmi(self.selected_file)
+                to_exe(self.selected_file)
                 name = self.selected_file.split("/")[-1]
                 self.text_edit.append(
-                    f"\t编译成功，生成汇编代码 {self.selected_file[:-1]}asm")
+                    f"\t编译成功，生成可执行文件 {self.selected_file[:-1]}exe")
             except Exception as e:
                 self.text_edit.append(f"\t编译失败: {e}")
         else:
             self.text_edit.append("\tNo file selected")
-
+    
     def show_mcode(self):
         if self.selected_file:
             mid = creat_mcode(self.selected_file)['mid_code']

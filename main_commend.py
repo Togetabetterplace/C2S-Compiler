@@ -3,7 +3,6 @@ PCC编译器入口函数
 
 """
 from to_asm import to_asm
-from to_gcc_asm import to_asmi
 from generate import creat_mcode
 from get_Ptable import grammars
 from LR import analysis
@@ -16,8 +15,7 @@ head = """
 """
 
 phelp = """+-------------------------------------------------+
-|\tpcc -s [filename]\t生成汇编源码(AT&T)        
-|\tpcc -a [filename]\t生成汇编源码(gcc)     
+|\tpcc -s [filename]\t生成汇编源码(AT&T)           
 |\tpcc -m [filename]\t查看生成的四元式        
 |\tpcc -t [filename]\t查看语法树生成过程   
 |\tpcc -l [filename]\t查看词法分析        
@@ -58,13 +56,6 @@ def begin():
                 to_asm(slist[2])
                 name = slist[2].split("/")[-1]
                 print("\t编译成功，生成汇编代码" + slist[2][:-1] + "s")
-            except:
-                print("\t编译失败")
-        elif slist[1] == "-a":
-            try:
-                to_asmi(slist[2])
-                name = slist[2].split("/")[-1]
-                print("\t编译成功，生成汇编代码" + slist[2][:-1] + "asm")
             except:
                 print("\t编译失败")
         elif slist[1] == "-t":
