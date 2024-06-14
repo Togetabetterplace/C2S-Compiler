@@ -7,7 +7,7 @@
 .LC0:
 	.string "f(%d)=%d\n"
 .LC1:
-	.string "completeprintFibonaccinumber==¡·pcc\n"
+	.string "completeprintFibonaccinumber====================+\n"
 	.text
 	.globl	main
 	.type	main, @function
@@ -78,4 +78,4 @@ main:
 	.cfi_endproc
 .LFE6:
 	.size	main, .-main
-	.ident	"PCC: 1.0.0"
+	.ident	"C2S"

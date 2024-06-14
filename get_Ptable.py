@@ -80,15 +80,19 @@ def init_observer():
                 observer[k].append(last_k)
 
 
-"""
-刷新记录
-检测到某个follow集合更新时，对其记录的所有产生式左部的follow集合进行更新
-简而言之：follow（A）发生了更新，那么曾经将follow（A）加入自身的B，C也更新其follow
-并且，这是一个递归过程
-"""
-
-
 def refresh(k):
+    """
+    This function is used to refresh the follow set of a non-terminal symbol.
+    It checks if the follow set of a non-terminal symbol has been updated,
+    and if so, it updates the follow set of all non-terminal symbols that have been recorded as observers.
+    This process is done recursively.
+
+    Parameters:
+    k (str): The non-terminal symbol for which the follow set needs to be refreshed.
+
+    Returns:
+    None
+    """
     for lk in observer[k]:
         newlk = U(follow_table[k], follow_table[lk])
         if newlk != follow_table[lk]:
@@ -96,36 +100,78 @@ def refresh(k):
             refresh(lk)
 
 
-"""
-合并两个list并且去重
-"""
-
-
 def U(A, B):
+    """
+    This function merges two lists and removes duplicates.
+
+    Parameters:
+    A (list): The first list to be merged.
+    B (list): The second list to be merged.
+
+    Returns:
+    list: A new list that contains all unique elements from both input lists.
+
+    Example:
+    >>> U([1, 2, 3], [2, 3, 4])
+    [1, 2, 3, 4]
+    """
     return list(set(A + B))
 
 
-"""
-查找指定非终结符的first集合
-"""
-
-
 def find_first(key):
+    """
+    This function calculates the first set of a non-terminal symbol in a given context-free grammar.
+
+    Parameters:
+    key (str): The non-terminal symbol for which the first set needs to be calculated.
+
+    Returns:
+    list: A list containing the first set of the non-terminal symbol.
+
+    The first set of a non-terminal symbol is the set of terminal symbols that can appear as the first symbol in any string derived from that non-terminal symbol.
+    """
     if key not in grammars:
+        # If the key is not in grammars, it is a terminal symbol, so return it as the first set.
         return [key]
-    l = []
+
+    l = []  # Initialize an empty list to store the first set.
+
+    # Iterate over all productions of the non-terminal symbol.
     for next_grammar in grammars[key]:
+        # Get the first symbol of the production.
         next_k = next_grammar.split()[0]
+
+        # Recursively calculate the first set of the first symbol and extend the list.
         l.extend(find_first(next_k))
-    return l
 
-
-"""
-查找所有非终结符follow
-"""
+    return l  # Return the calculated first set.
 
 
 def find_follow():
+    """
+    This function calculates the follow set of all non-terminal symbols in a given context-free grammar.
+
+    The follow set of a non-terminal symbol is the set of terminal symbols that can appear immediately to the right of that non-terminal symbol in any string derived from the grammar.
+
+    Parameters:
+    None
+
+    Returns:
+    None
+
+    The function uses the following steps:
+    1. Initialize the observer dictionary to keep track of non-terminal symbols that need to be updated when their follow sets change.
+    2. Add the '#' symbol to the follow set of the start symbol (Program).
+    3. Iterate over all non-terminal symbols in the grammar.
+    4. For each non-terminal symbol, iterate over all its productions.
+    5. For each production, iterate over all symbols except the last one.
+    6. If the current symbol is a non-terminal symbol, check if its first set contains any terminal symbols.
+    7. If the first set does not contain any terminal symbols, add the follow set of the current non-terminal symbol to the follow set of the current symbol.
+    8. If the first set contains a terminal symbol, add that terminal symbol to the predict table.
+    9. If the first set contains the 'null' symbol, add the follow set of the current non-terminal symbol to the predict table.
+    10. Add the follow set of the current non-terminal symbol to the follow set of the last symbol of the production.
+    11. Remove the 'null' symbol from the follow sets of all non-terminal symbols.
+    """
     init_observer()
     follow_table["Program"] = ["#"]  # follow(S)加入#号
     for k in grammars:
@@ -135,7 +181,7 @@ def find_follow():
                 if next_k[i] in grammars:
                     if next_k[i + 1] not in grammars:
                         """
-                        如果后继字符不是终结符，加入
+                        If the subsequent character is not a terminal symbol, add it to the follow set.
                         """
                         new_follow = U([next_k[i + 1]],
                                        follow_table[next_k[i]])
@@ -146,7 +192,7 @@ def find_follow():
                         new_follow = U(
                             first_table[next_k[i + 1]], follow_table[next_k[i]])
                         """
-                        如果后继字符的first集合中含有null，通知所有记录者更新follow集合
+                        If the first set of the subsequent character contains 'null', notify all observers to update the follow set.
                         """
                         if "null" in first_table[next_k[i + 1]]:
                             new_follow = U(follow_table[k], new_follow)
@@ -155,7 +201,7 @@ def find_follow():
                             follow_table[next_k[i]] = new_follow
                             refresh(next_k[i])
             """
-            产生式左部的follow集合加入最后一个非终结符的follow集合
+            Add the follow set of the non-terminal symbol to the follow set of the last non-terminal symbol.
             """
             if next_k[-1] in grammars:
                 if next_k[-1] not in follow_table:
@@ -168,35 +214,67 @@ def find_follow():
             follow_table[k].remove("null")
 
 
-"""
-获取所有非终结符的first集合
-在此同时直接将first集合加入predict表中
-"""
-
-
 def get_first_table():
+    """
+    This function populates the first_table and predict_table dictionaries.
+
+    The first_table dictionary stores the first set of each non-terminal symbol in the grammar.
+    The predict_table dictionary stores the predict set of each non-terminal symbol in the grammar.
+
+    Parameters:
+    None
+
+    Returns:
+    None
+
+    The function iterates over each non-terminal symbol in the grammar.
+    For each non-terminal symbol, it initializes an empty dictionary entry in the predict_table.
+    Then, it iterates over each production of the non-terminal symbol.
+    For each production, it extracts the first symbol and calculates its first set.
+    It extends the first set of the non-terminal symbol with the calculated first set.
+    Then, it adds each terminal symbol in the first set to the predict_table,
+    associating it with the current production.
+    """
     for k in grammars:
+        # Initialize an empty dictionary for predict set of non-terminal symbol k
         predict_table[k] = {}
+        # Initialize an empty list for first set of non-terminal symbol k
         first_table[k] = []
         for next_grammar in grammars[k]:
+            # Extract the first symbol of the production
             next_k = next_grammar.split()[0]
+            # Calculate the first set of the first symbol
             kl = find_first(next_k)
+            # Extend the first set of non-terminal symbol k with the calculated first set
             first_table[k].extend(kl)
             for kk in kl:
-                if kk != "null":
+                if kk != "null":  # If the terminal symbol is not 'null'
+                    # Add the terminal symbol to the predict set of non-terminal symbol k
                     predict_table[k][kk] = next_grammar
 
 
-"""
-将follow集合中的部分内容加入predict表中
-"""
-
-
 def get_predict_table():
+    """
+    This function populates the predict_table dictionary with the predict set of each non-terminal symbol in the grammar.
+
+    Parameters:
+    None
+
+    Returns:
+    None
+
+    The function iterates over each non-terminal symbol in the grammar.
+    For each non-terminal symbol, it iterates over each production of the non-terminal symbol.
+    For each production, it extracts the first symbol and checks if it is a non-terminal symbol with 'null' in its first set or if it is 'null' itself.
+    If the condition is met, it adds each terminal symbol in the follow set of the non-terminal symbol to the predict set of the non-terminal symbol,
+    associating it with the current production.
+    """
     for k in grammars:
         for next_grammar in grammars[k]:
             next_k = next_grammar.split()[0]
+            # If the first symbol of the production is a non-terminal symbol with 'null' in its first set or if it is 'null' itself
             if next_k in grammars and "null" in first_table[next_k] or next_k == "null":
+                # Add each terminal symbol in the follow set of the non-terminal symbol to the predict set of the non-terminal symbol
                 for fk in follow_table[k]:
                     predict_table[k][fk] = next_grammar
 
@@ -212,14 +290,14 @@ def show_tables():
     get_first_table()
     find_follow()
     get_predict_table()
-    print("\nfirst集合如下\n")
+    print("\nfirst集合:\n")
     for k in first_table:
         print(k, first_table[k])
-    print("\nfollow集合如下\n")
+    print("\nfollow集合:\n")
     for k in follow_table:
         print(k, follow_table[k])
     # print(first_table)
-    print("\n预测表如下\n")
+    print("\n预测表:\n")
     for k in predict_table:
         print(k, predict_table[k])
     return first_table, follow_table, predict_table

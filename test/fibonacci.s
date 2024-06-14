@@ -78,4 +78,4 @@ main:
 	.cfi_endproc
 .LFE6:
 	.size	main, .-main
-	.ident	"PCC: 1.0.0"
+	.ident	"C2S"

@@ -1,12 +1,12 @@
+from generate import creat_mcode
+from other.function import if_num
 """
 中间代码转汇编代码
 
 """
-from generate import creat_mcode
-from other.function import if_num
 
 global_head = """
-;PCC compiler master------------------------------------------------
+;C2S compiler master------------------------------------------------
 ;-------------------------------------------------------------------
 """
 
@@ -27,7 +27,7 @@ code_footer = """
 \t.cfi_endproc
 .LFE6:
 	.size\tmain, .-main
-	.ident\t"PCC: 1.0.0"
+	.ident\t"C2S"
 """
 
 """
@@ -250,4 +250,4 @@ def to_asm(filename):
 
 
 if __name__ == "__main__":
-    to_asm("./test/test.c")
+    to_asm("./test/print.c")

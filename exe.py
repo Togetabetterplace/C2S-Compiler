@@ -1,5 +1,5 @@
 import struct
-from to_asm import to_asm
+from asm import to_asm
 # pack expected 18 items for packing (got 19)
 
 def parse_asm(asm_filename):
@@ -163,7 +163,7 @@ def to_exe(filename):
     汇编指令到机器码: assemble 函数将指令转换为机器码。指令集映射扩展了更多的指令。
     创建可执行文件: create_executable 函数生成包含 DOS 头、PE 头、可选头和节头的 PE 文件格式，并将机器码写入其中。
     """
-    # to_asm(filename)
+    to_asm(filename)
     asm_filename = filename[:-1] + "s" 
     exe_filename = filename[:-1] + "exe"
     instructions = parse_asm(asm_filename)

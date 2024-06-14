@@ -1,6 +1,8 @@
 
+#include <stdio.h>
+
 int main(){
-    int arr[25];
+    int arr[100];
     int index = 0;
     // 求０～２０的斐波那契数列
     arr[0] = 1;
@@ -12,5 +14,5 @@ int main(){
         printf("f(%d)=%d\n",index,b);
         index = index +1;
     }
-    printf("complete print Fibonacci number ==》pcc\n");
+    printf("complete print Fibonacci number ====================+\n");
 }

@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QFileDialog, QLineEdit, QLabel, QMessageBox
-from to_asm import to_asm
-from to_exe import to_exe
+from asm import to_asm
+from exe import to_exe
 from generate import creat_mcode
 from get_Ptable import grammars, show_tables
 from LR import analysis
@@ -9,9 +9,9 @@ import os
 from lexer import Word_List
 
 head = """
->>> Welcome to C2S-C语言编译器
->>> 使用帮助：pcc -h
->>>
+--------------------------+
+Welcome to C2S-C语言编译器|
+--------------------------+
 """
 
 phelp = """+-------------------------------------------------+
@@ -102,7 +102,7 @@ class PCCCompilerGUI(QMainWindow):
             self.text_edit.append(f"Selected file: {self.selected_file}")
 
     def execute_command(self, command):
-        self.text_edit.append(f">>> PCC >>> {command}")
+        self.text_edit.append(f">>> C2S >>> {command}")
         os.system(command)
 
     def generate_asm(self):
@@ -148,7 +148,7 @@ class PCCCompilerGUI(QMainWindow):
                     self, 'Print Syntax Tree', "是否打印语法树(左边为父节点，右边为子节点)?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
                 if reply == QMessageBox.Yes:
                     self.text_edit.append(str(root[1]))
-                    self.text_edit.append("\n\n语法树打印完成！")
+                    self.text_edit.append("\n\n语法树打印完成")
         else:
             self.text_edit.append("\tNo file selected")
 
@@ -164,20 +164,20 @@ class PCCCompilerGUI(QMainWindow):
 
     def show_predict_table(self):
         first_table, follow_table, predict_table = show_tables()
-        self.text_edit.append("\nfirst集合如下\n")
+        self.text_edit.append("\nfirst集合:\n")
         for k in first_table:
             self.text_edit.append(k)
             self.text_edit.append(str(first_table[k]))
-        self.text_edit.append("\nfollow集合如下\n")
+        self.text_edit.append("\nfollow集合:\n")
         for k in follow_table:
             self.text_edit.append(k)
             self.text_edit.append(str(follow_table[k]))
         # print(first_table)
-        self.text_edit.append("\n预测表如下\n")
+        self.text_edit.append("\n预测表:\n")
         for k in predict_table:
             self.text_edit.append(k)
             self.text_edit.append(str(predict_table[k]))
-        # self.text_edit.append(
+        # self.text_edit.append
 
     def show_grammar(self):
         for g in grammars:
