@@ -50,10 +50,9 @@ class SyntaxTreeDialog(QDialog):
             ax.text(x, y, node.type, ha='center', va='center', bbox=dict(
                 facecolor='skyblue', edgecolor='black', boxstyle='round,pad=0.3'))
             num_children = len(node.child)
-            width = 5 / np.sqrt(np.sqrt(np.sqrt(np.sqrt(np.sqrt(level)))))  # \frac{2.5}{e^{-4+x}+0.5}-1
-            child_x = x - (num_children - 1) * width / \
-                2  # starting x position for children
-            child_y = y - 1  # vertical distance between levels
+            width = 10 + 15 / np.sqrt(np.sqrt(np.sqrt(np.sqrt(level))))  # \frac{2.5}{e^{-4+x}+0.5}-1
+            child_x = x - (num_children - 1) * width / 2  # starting x position for children
+            child_y = y - 0.10*level  # vertical distance between levels
 
             for child in node.child:
                 ax.plot([x, child_x], [y, child_y], 'k-')
